@@ -4,36 +4,40 @@ const employeeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
     required: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
   },
   mobile: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   designation: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
   },
   gender: {
     type: String,
     enum: ['male', 'female', 'other'],
-    required: true
+    required: true,
   },
   course: {
     type: String,
     required: true,
-    trim: true
-  }
+    trim: true,
+  },
+  Image: {
+    type: String, // Store the Base64 string for the image
+    required: false, // Optional (can be omitted if not provided)
+  },
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
 export default mongoose.model('Employee', employeeSchema);

@@ -77,3 +77,40 @@ export default function LoginForm() {
 
           <div>
             <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {isRegistering ? 'Register' : 'Sign In'}
+            </button>
+          </div>
+
+          <div className="text-sm text-center">
+            {isRegistering ? (
+              <>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  onClick={() => setIsRegistering(false)}
+                >
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                New here?{' '}
+                <button
+                  type="button"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  onClick={() => setIsRegistering(true)}
+                >
+                  Create an account
+                </button>
+              </>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

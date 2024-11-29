@@ -8,7 +8,7 @@ export const auth = async (req, res, next) => {
       throw new Error();
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, "8d44d8b4b7c1a4bf3c8d9c9e6a7f0e3d");
     req.userId = decoded.userId;
     next();
   } catch (error) {

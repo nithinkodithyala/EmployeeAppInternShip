@@ -1,22 +1,66 @@
-import React from 'react';
+
+
+
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { registerEmployee } from '../services/api';
+import { registerEmployee } from '../services/api'; // API function to register employee
 import type { Employee } from '../types/employee';
 
 export default function EmployeeForm() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<Employee>();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const onSubmit = async (data: Employee) => {
-    try {
-      await registerEmployee(data);
-      toast.success('Employee added successfully!');
-      reset();
-    } catch (error) {
-      toast.error('Failed to add employee');
+  // Handle image file upload and show the image preview
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string); // Set image preview for display
+      };
+      reader.readAsDataURL(file); // Read the image file as base64
     }
   };
+
+  // Handle form submission
+  // const onSubmit = async (data: Employee) => {
+  //   try {
+  //     await registerEmployee(data); // Submit the form data
+  //     toast.success('Employee added successfully!');
+  //     reset(); // Reset the form after submission
+  //     setImagePreview(null); // Clear the image preview
+  //   } catch (error) {
+  //     toast.error('Failed to add employee');
+  //   }
+  // };
+  const onSubmit = async (data: Employee) => {
+  const formData = new FormData();
+  
+  // Append form data
+  formData.append("name", data.name);
+  formData.append("email", data.email);
+  formData.append("mobile", data.mobile);
+  formData.append("designation", data.designation);
+  formData.append("gender", data.gender);
+  formData.append("course", data.course);
+
+  // Append image if it exists
+  const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+  if (fileInput?.files?.[0]) {
+    formData.append("image", fileInput.files[0]);
+  }
+
+  try {
+    await registerEmployee(formData); // Modify this to accept FormData in your API service
+    toast.success('Employee added successfully!');
+    reset(); // Reset form
+    setImagePreview(null); // Clear the image preview
+  } catch (error) {
+    toast.error('Failed to add employee');
+  }
+};
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -33,6 +77,7 @@ export default function EmployeeForm() {
               {...register('name', { required: 'Name is required' })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
+            {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
           </div>
           
           <div>
@@ -42,6 +87,7 @@ export default function EmployeeForm() {
               {...register('email', { required: 'Email is required' })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
           </div>
 
           <div>
@@ -50,6 +96,7 @@ export default function EmployeeForm() {
               {...register('mobile', { required: 'Mobile is required' })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
+            {errors.mobile && <p className="text-red-500 text-sm">{errors.mobile.message}</p>}
           </div>
 
           <div>
@@ -58,6 +105,7 @@ export default function EmployeeForm() {
               {...register('designation', { required: 'Designation is required' })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
+            {errors.designation && <p className="text-red-500 text-sm">{errors.designation.message}</p>}
           </div>
 
           <div>
@@ -71,6 +119,7 @@ export default function EmployeeForm() {
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
+            {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
           </div>
 
           <div>
@@ -79,6 +128,23 @@ export default function EmployeeForm() {
               {...register('course', { required: 'Course is required' })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
+            {errors.course && <p className="text-red-500 text-sm">{errors.course.message}</p>}
+          </div>
+
+          {/* Image upload (only for preview, not part of form submission) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Upload Image</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img src={imagePreview} alt="Uploaded Preview" className="w-20 h-20 object-cover rounded" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -89,7 +155,6 @@ export default function EmployeeForm() {
           >
             Add Employee
           </button>
-          
         </div>
       </form>
     </div>
